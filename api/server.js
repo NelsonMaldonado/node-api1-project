@@ -6,6 +6,7 @@ server.use(express.json())
 
 server.post('/api/users', async(req,res)=>{
   try{
+
     const result = await mod.insert(req.body)
     res.status(201).json(result)
   }catch(err){
@@ -64,4 +65,24 @@ server.delete("/api/users/:id", (req, res) => {
       res.status(500).json({ message: `${error.message}` })
     })
 })
+
+server.put('/api/users/:id', async(req,res)=>{
+  const {id} = req.params
+  const {name,bio} = req.body
+  console.log(id, name, bio)
+  
+  try{
+    const data = await mod.update(id,{name,bio})
+    if (!data){
+      res.status(404).json({ message: "The user with the specified ID does not exist" })
+    } else{
+      res.json(data)
+    }
+  }catch(err){
+    res.status(500).json({ message: "The user information could not be modified" })
+  }
+  
+})
+
+
 module.exports = server // EXPORT YOUR SERVER instead of {}

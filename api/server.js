@@ -1,28 +1,16 @@
 // BUILD YOUR SERVER HERE
 const express = require("express")
-const res = require("express/lib/response")
-const mod = require("./users/model.js")
-
+const mod = require("./users/model")
 const server = express()
-server.post("/api/users", (req, res) => {
-  if (!req.body.name || !req.body.bio) {
-    res
-      .status(400)
-      .json({ message: "Please provide name and bio for the user" })
-  } else {
-    mod
-      .insert(req.body.name, req.bio)
-      .then((user) => {
-        res.status(201).json(user)
-      })
-      .catch((err) => {
-        res.status(500).json({
-          message: "There was an error while saving the user to the database",
-          error: err.message,
-        })
-      })
+server.use(express.json())
+
+server.post('/api/users', async(req,res)=>{
+  try{
+    const result = await mod.insert(req.body)
+    res.status(201).json(result)
+  }catch(err){
+    res.status(400).json({ message: "Please provide name and bio for the user" })
   }
-  console.log("You posted an API")
 })
 
 server.get("/api/users", (req, res) => {
